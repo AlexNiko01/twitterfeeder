@@ -55,13 +55,16 @@ class TwitterController extends Controller
         $secret = $request->get('secret');
         if (!$id || !$user || !$secret) {
             $response['error'] = 'missing parameter';
+            return $response;
         };
         if (sha1($id . $user) != $secret) {
             $response['error'] = 'access denied';
+            return $response;
         }
 
         if (strlen($id) < 32) {
             $response['error'] = 'wrong id format';
+            return $response;
         }
         return $response;
     }
@@ -122,9 +125,11 @@ class TwitterController extends Controller
         $secret = $request->get('secret');
         if (!$id || !$secret) {
             $response['error'] = 'missing parameter';
+            return $response;
         };
         if (sha1($id) != $secret) {
             $response['error'] = 'access denied';
+            return $response;
         }
         /**
          * @var $twitter \naffiq\twitterapi\TwitterAPI
