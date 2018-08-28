@@ -6,7 +6,6 @@ use Yii;
 use app\models\TwitterUser;
 use yii\base\Module;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
 
@@ -25,13 +24,19 @@ class TwitterController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'add' => ['GET'],
-//                    'feed' => ['GET'],
+                    'feed' => ['GET'],
                     'remove' => ['GET'],
                 ],
             ],
         ];
     }
 
+    /**
+     * TwitterController constructor.
+     * @param string $id
+     * @param Module $module
+     * @param array $config
+     */
     public function __construct($id, Module $module, array $config = [])
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -62,20 +67,20 @@ class TwitterController extends Controller
     }
 
     /**
-     * This method will be used for add another Twitter user to the feed
+     * This method intended for add another Twitter user to the feed
      * @return mixed
      */
     public function actionAdd(): array
     {
         $response = $this->accessValidator();
-        if (!isset($response['error'])) {
+        if (isset($response['error'])) {
             return $response;
         }
         $request = Yii::$app->request;
         $user = $request->get('user');
 
-        $existedUsersId = TwitterUser::find()->where(['user' => $user])->select('user')->asArray()->all();
-        if (!empty($existedUsersId)) {
+        $existedUsers = TwitterUser::find()->where(['user' => $user])->select('user')->asArray()->all();
+        if (!empty($existedUsers)) {
             $response['error'] = 'this user already added';
             return $response;
         }
@@ -86,8 +91,13 @@ class TwitterController extends Controller
         return [];
     }
 
-
-    private function buildResponse($tweets, $user)
+    /**
+     * This method builds an answer in array format
+     * @param $tweets
+     * @param $user
+     * @return array
+     */
+    private function buildResponse(array $tweets, string $user): array
     {
         $response = [];
         foreach ($tweets as $tweet) {
@@ -100,6 +110,10 @@ class TwitterController extends Controller
         return $response;
     }
 
+    /**
+     * This method gets the latest tweets from users that were added and outputs them in specified format
+     * @return array|mixed
+     */
     public function actionFeed()
     {
         $request = Yii::$app->request;
@@ -112,16 +126,13 @@ class TwitterController extends Controller
         if (sha1($id) != $secret) {
             $response['error'] = 'access denied';
         }
-
-
+        /**
+         * @var $twitter \naffiq\twitterapi\TwitterAPI
+         */
         $twitter = \Yii::$app->get('twitter');
-
         $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
         $requestMethod = 'GET';
-
-
         $twitterUsers = TwitterUser::find()->select(['user'])->asArray()->all();
-
         $feed = [];
         foreach ($twitterUsers as $twitterUser) {
             $postFields = [
@@ -140,6 +151,10 @@ class TwitterController extends Controller
         return ['feed' => $feed];
     }
 
+    /**
+     * This method removes already added users from the list of users
+     * @return array|mixed
+     */
     public function actionRemove()
     {
         $response = $this->accessValidator();
@@ -157,6 +172,5 @@ class TwitterController extends Controller
         $twitterUser->delete();
         return [];
     }
-
 
 }
