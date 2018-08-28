@@ -158,13 +158,13 @@ class TwitterController extends Controller
     public function actionRemove()
     {
         $response = $this->accessValidator();
-        if (!isset($response['error'])) {
+        if (isset($response['error'])) {
             return $response;
         }
         $request = Yii::$app->request;
-        $id = $request->get('id');
+        $user = $request->get('user');
 
-        $twitterUser = TwitterUser::findOne(['src_id' => $id]);
+        $twitterUser = TwitterUser::findOne(['user' => $user]);
         if (!$twitterUser) {
             $response['error'] = 'internal error';
             return $response;
