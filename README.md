@@ -7,7 +7,11 @@
  <h3>Startup instruction</h3>
 </p>
 <ol>
-<li> run <b>composer update</b></li>
+<li> run 
+```
+composer update
+```
+</li>
 <li> Edit the file `config/db.php` with real data, for example:
 <pre>
      return [
@@ -19,7 +23,11 @@
      ];
      </pre>
      </li>
-<li>run <b>yii migrate</b></li>
+<li>run 
+```
+yii migrate
+```
+</li>
 </ol>
 
  <h3>Available endpoints</h3>
