@@ -8,10 +8,11 @@
 </p>
 <ol>
 <li> run 
+</li>
+
 ```
 composer update
 ```
-</li>
 <li> Edit the file `config/db.php` with real data, for example:
 <pre>
      return [
@@ -24,6 +25,7 @@ composer update
      </pre>
      </li>
 <li>run 
+
 ```
 yii migrate
 ```
