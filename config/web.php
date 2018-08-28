@@ -14,12 +14,13 @@ $config = [
 
     'components' => [
 
-//        'twitter' => [
-//            'oauthAccessToken' => 'YOUR_OAUTH_ACCESS_TOKEN',
-//            'oauthAccessTokenSecret' => 'YOUR_OAUTH_ACCESS_TOKEN',
-//            'consumerKey' => 'YOUR_CONSUMER_KEY',
-//            'consumerSecret' => 'YOUR_CONSUMER_SECRET'
-//        ],
+        'twitter' => [
+            'class' => '\naffiq\twitterapi\TwitterAPI',
+            'oauthAccessToken' => '2762255844-GeaPYFMa95FjI9gg0321N1OYduzz1ISFRo44fxY',
+            'oauthAccessTokenSecret' => 'vg2ZGbv7VRM3Ue5Y0JzQyfHLnhcVXg7W95gnFGXkVQXiy',
+            'consumerKey' => 'XCWY9vNm1C0WeTphVJ0ojAp5W',
+            'consumerSecret' => 'J6VUbwUv7G5gggFfF1TwwR56xgHQpHugdrTxvYo1z5Tn1RXeM8'
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '0OFwaiZMDo0ItdB44ltj5BE8fvltT1j4',

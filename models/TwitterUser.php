@@ -8,7 +8,6 @@ use \yii\db\ActiveRecord;
  * This is the model class for table "twitter_users".
  *
  * @property int $id
- * @property string $src_id
  * @property string $user
  */
 class TwitterUser extends ActiveRecord
@@ -27,9 +26,7 @@ class TwitterUser extends ActiveRecord
     public function rules()
     {
         return [
-            [['src_id'], 'required'],
             [['user'], 'string'],
-            [['src_id'], 'string', 'max' => 32],
         ];
     }
 
@@ -40,7 +37,6 @@ class TwitterUser extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'src_id' => 'Src ID',
             'user' => 'User',
         ];
     }

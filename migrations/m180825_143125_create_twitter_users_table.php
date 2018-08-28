@@ -14,7 +14,6 @@ class m180825_143125_create_twitter_users_table extends Migration
     {
         $this->createTable('twitter_users', [
             'id' => $this->primaryKey(),
-            'src_id' => $this->string(32)->notNull(),
             'user' => $this->text(),
         ]);
     }

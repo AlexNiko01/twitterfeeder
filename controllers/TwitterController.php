@@ -25,7 +25,7 @@ class TwitterController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'add' => ['GET'],
-                    'feed' => ['GET'],
+//                    'feed' => ['GET'],
                     'remove' => ['GET'],
                 ],
             ],
@@ -50,16 +50,13 @@ class TwitterController extends Controller
         $secret = $request->get('secret');
         if (!$id || !$user || !$secret) {
             $response['error'] = 'missing parameter';
-
         };
         if (sha1($id . $user) != $secret) {
             $response['error'] = 'access denied';
-
         }
 
         if (strlen($id) < 32) {
             $response['error'] = 'wrong id format';
-
         }
         return $response;
     }
@@ -75,31 +72,73 @@ class TwitterController extends Controller
             return $response;
         }
         $request = Yii::$app->request;
-        $id = $request->get('id');
         $user = $request->get('user');
 
-
-        $existedUsersId = TwitterUser::find()->where(['src_id' => $id])->select('src_id')->asArray()->all();
+        $existedUsersId = TwitterUser::find()->where(['user' => $user])->select('user')->asArray()->all();
         if (!empty($existedUsersId)) {
             $response['error'] = 'this user already added';
             return $response;
         }
 
         $twitterUser = new TwitterUser();
-        $twitterUser->src_id = $id;
         $twitterUser->user = $user;
         $twitterUser->save();
         return [];
-
-
     }
 
+
+    private function buildResponse($tweets, $user)
+    {
+        $response = [];
+        foreach ($tweets as $tweet) {
+            $response[] = [
+                'user' => $user,
+                'tweet' => $tweet['text'],
+                'hashtag' => $tweet['entities']['hashtags']
+            ];
+        }
+        return $response;
+    }
 
     public function actionFeed()
     {
+        $request = Yii::$app->request;
+        $response = [];
+        $id = $request->get('id');
+        $secret = $request->get('secret');
+        if (!$id || !$secret) {
+            $response['error'] = 'missing parameter';
+        };
+        if (sha1($id) != $secret) {
+            $response['error'] = 'access denied';
+        }
 
+
+        $twitter = \Yii::$app->get('twitter');
+
+        $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+        $requestMethod = 'GET';
+
+
+        $twitterUsers = TwitterUser::find()->select(['user'])->asArray()->all();
+
+        $feed = [];
+        foreach ($twitterUsers as $twitterUser) {
+            $postFields = [
+                'screen_name' => $twitterUser['user']
+            ];
+
+            $tweets = json_decode($twitter->buildOauth($url, $requestMethod)
+                ->setPostfields($postFields)
+                ->performRequest(), true);
+            if (!empty($tweets['errors'])) {
+                return $tweets;
+            }
+            $response = $this->buildResponse($tweets, $twitterUser['user']);
+            $feed[] = $response;
+        }
+        return ['feed' => $feed];
     }
-
 
     public function actionRemove()
     {
